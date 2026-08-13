@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เพื่อชุมชน — แอปเพื่อชุมชน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Noto+Sans+Thai+Looped:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-900:#0D47A1;
+    --navy-800:#1A237E;
+    --navy-ink:#0B2E59;
+    --bg:#F0F4F8;
+    --card:#FFFFFF;
+    --red:#D32F2F;
+    --red-dark:#B71C1C;
+    --green:#2E7D32;
+    --orange:#E65100;
+    --purple:#6A1B9A;
+    --text-main:#1C2733;
+    --text-sub:#5A6B7B;
+    --line:#BBDEFB;
+    --focus:#1976D2;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Noto Sans Thai', sans-serif;
+    color:var(--text-main);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Noto Sans Thai Looped', 'Noto Sans Thai', sans-serif;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline:3px solid var(--focus);
+    outline-offset:3px;
+    border-radius:8px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    background:linear-gradient(135deg, var(--navy-900), var(--navy-ink));
+    color:#fff;
+    padding:22px 20px 30px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    box-shadow:0 6px 20px rgba(13,71,161,0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header-inner{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .logo-badge{
+    width:52px;height:52px;flex:none;
+    border-radius:16px;
+    background:rgba(255,255,255,0.14);
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;
+  }
+  header h1{
+    margin:0;
+    font-size:clamp(22px,5vw,28px);
+    font-weight:800;
+    line-height:1.2;
+  }
+  header p{
+    margin:2px 0 0;
+    font-size:15px;
+    color:rgba(255,255,255,0.72);
+  }
+  .clear-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+  }
+
+  main{
+    max-width:640px;
+    margin:0 auto;
+    padding:22px 18px 60px;
+  }
+
+  /* ---------- Emergency button ---------- */
+  .emergency-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    background:linear-gradient(135deg, var(--red), var(--red-dark));
+    color:#fff;
+    border:none;
+    border-radius:22px;
+    padding:22px 22px;
+    cursor:pointer;
+    box-shadow:0 10px 28px rgba(211,47,47,0.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+    text-align:left;
+    animation:pulse-shadow 2.6s ease-in-out infinite;
+  }
+  .emergency-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 14px 34px rgba(211,47,47,0.45);
+  }
+  .emergency-btn:active{ transform:translateY(0); }
+  @keyframes pulse-shadow{
+    0%,100%{ box-shadow:0 10px 28px rgba(211,47,47,0.35); }
+    50%{ box-shadow:0 10px 34px rgba(211,47,47,0.55); }
+  }
+  .emergency-icon{
+    width:56px;height:56px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:34px;
+  }
+  .emergency-text .title{
+    font-size:22px;
+    font-weight:800;
+    display:block;
+  }
+  .emergency-text .sub{
+    font-size:15px;
+    color:rgba(255,255,255,0.85);
+    display:block;
+    margin-top:2px;
+  }
+
+  /* ---------- Section title ---------- */
+  .section-title{
+    font-size:21px;
+    font-weight:800;
+    color:var(--navy-800);
+    margin:30px 0 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* ---------- Forms & Inputs ---------- */
+  .post-form-card {
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 26px;
+  }
+  .form-group {
+    margin-bottom: 12px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy-800);
+    margin-bottom: 6px;
+  }
+  .form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #CFD8DC;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    background: #F8FAFC;
+    color: var(--text-main);
+  }
+  .form-control:focus {
+    outline: none;
+    border-color: var(--navy-900);
+    background: #fff;
+  }
+  .submit-btn {
+    width: 100%;
+    background: var(--navy-900);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--text-sub);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .tab-btn.active {
+    background: var(--navy-800);
+    color: white;
+    border-color: var(--navy-800);
+  }
+
+  /* ---------- Announcement card (Dynamic) ---------- */
+  .announce-card{
+    margin-bottom:16px;
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    animation: fadeIn 0.3s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .announce-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:19px;
+    font-weight:800;
+  }
+  .announce-head .ic{ font-size:24px; }
+  .announce-head.alert { color: var(--red); }
+  .announce-head.market { color: var(--orange); }
+  .announce-head.announcement { color: var(--navy-900); }
+  
+  hr{
+    border:none;
+    border-top:1px solid #E3EAF1;
+    margin:14px 0;
+  }
+  .announce-title{
+    font-size:17px;
+    font-weight:700;
+    margin:0 0 4px;
+    color:#1a1a1a;
+  }
+  .announce-body{
+    font-size:15px;
+    color:var(--text-sub);
+    margin:0;
+    line-height:1.55;
+    white-space: pre-wrap;
+  }
+  .announce-meta {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #9AA7B4;
+    display: flex;
+    justify-content: space-between;
+  }
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  footer{
+    text-align:center;
+    padding:24px 18px 34px;
+    color:#8A97A5;
+    font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-badge" aria-hidden="true">🏘️</div>
+    <div>
+      <h1>แอปเพื่อชุมชน</h1>
+      <p>ใช้งานง่าย เพื่อทุกคนในบ้าน</p>
+    </div>
+  </div>
+  <button class="clear-btn" onclick="clearData()">ล้างข้อมูล</button>
+</header>
+
+<main>
+  <button class="emergency-btn" type="button" aria-label="แจ้งเหตุฉุกเฉินด่วน กดตรงนี้เพื่อขอความช่วยเหลือ">
+    <span class="emergency-icon" aria-hidden="true">⚠️</span>
+    <span class="emergency-text">
+      <span class="title">แจ้งเหตุฉุกเฉินด่วน</span>
+      <span class="sub">กดตรงนี้เพื่อขอความช่วยเหลือ</span>
+    </span>
+  </button>
+
+  <h2 class="section-title">สร้างประกาศใหม่</h2>
+  
+  <!-- Form สำหรับโพสต์ -->
+  <div class="post-form-card">
+    <form id="postForm">
+      <div class="form-group">
+        <label for="postType">หมวดหมู่</label>
+        <select id="postType" class="form-control" required>
+          <option value="announcement">📢 ประกาศจากชุมชน</option>
+          <option value="market">🛍️ ซื้อขาย / แลกเปลี่ยน</option>
+          <option value="alert">⚡ แจ้งเหตุฉุกเฉิน</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="postTitle">หัวข้อ</label>
+        <input type="text" id="postTitle" class="form-control" placeholder="ระบุหัวข้อ..." required>
+      </div>
+      <div class="form-group">
+        <label for="postContent">รายละเอียด</label>
+        <textarea id="postContent" class="form-control" rows="3" placeholder="พิมพ์รายละเอียดที่นี่..." required></textarea>
+      </div>
+      <button type="submit" class="submit-btn">โพสต์ลงชุมชน</button>
+    </form>
+  </div>
+
+  <h2 class="section-title">กระดานข่าวชุมชน</h2>
+  
+  <!-- แถบหมวดหมู่ -->
+  <div class="tabs" id="filterTabs">
+    <button class="tab-btn active" onclick="setFilter('all')">🌐 ทั้งหมด</button>
+    <button class="tab-btn" onclick="setFilter('announcement')">📢 ประกาศ</button>
+    <button class="tab-btn" onclick="setFilter('market')">🛍️ ซื้อขาย</button>
+    <button class="tab-btn" onclick="setFilter('alert')">⚡ ฉุกเฉิน</button>
+  </div>
+
+  <!-- พื้นที่แสดงโพสต์ -->
+  <div id="feedContainer"></div>
+
+</main>
+
+<footer>แพลตฟอร์มเพื่อชุมชน &middot; เวอร์ชันเว็บ</footer>
+
+<script>
+  // กำหนดชื่อผู้ใช้งานปัจจุบัน (ดึงจากโปรไฟล์ Namo)
+  const currentUser = 'Namo';
+  let currentFilter = 'all';
+
+  // ข้อมูลจำลองเบื้องต้น เพื่อให้หน้าเว็บไม่ว่างเปล่าในครั้งแรก
+  const defaultPosts = [
+    {
+      id: 1,
+      type: 'alert',
+      author: 'ผู้ใหญ่บ้าน',
+      title: '⚡ แจ้งไฟฟ้าดับ ซอย 4',
+      content: 'วันนี้ เวลา 13:00 - 16:00 น. ขอให้ทุกบ้านเตรียมพร้อมครับ',
+      timestamp: new Date().getTime() - 3600000 // 1 ชม. ที่แล้ว
+    },
+    {
+      id: 2,
+      type: 'market',
+      author: 'ป้าศรี',
+      title: '🥬 ขายผักกาดขาวสดๆ',
+      content: 'ผักปลอดสารพิษ เพิ่งเก็บเช้านี้ โลละ 40 บาท แวะมาเอาที่บ้านซอย 2 ได้เลยจ้า',
+      timestamp: new Date().getTime() - 7200000 // 2 ชม. ที่แล้ว
+    }
+  ];
+
+  let posts = [];
+
+  // ระบบ LocalStorage เพื่อป้องกันข้อมูลหายเมื่อรีเฟรช
+  function loadData() {
+    const savedData = localStorage.getItem('community_app_posts');
+    if (savedData) {
+      posts = JSON.parse(savedData);
+    } else {
+      posts = [...defaultPosts];
+      saveData();
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem('community_app_posts', JSON.stringify(posts));
+  }
+
+  // ฟังก์ชันจัดรูปแบบเวลา
+  function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+  }
+
+  // จัดรูปแบบสีและไอคอนตามหมวดหมู่
+  function getPostConfig(type) {
+    switch(type) {
+      case 'alert': return { text: 'แจ้งเหตุฉุกเฉิน', icon: '⚠️', cssClass: 'alert' };
+      case 'market': return { text: 'ซื้อขาย / แลกเปลี่ยน', icon: '🛍️', cssClass: 'market' };
+      default: return { text: 'ประกาศจากชุมชน', icon: '📢', cssClass: 'announcement' };
+    }
+  }
+
+  // กรองหมวดหมู่
+  function setFilter(type) {
+    currentFilter = type;
+    
+    // อัปเดตสไตล์ของปุ่ม Tab
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    renderFeed();
+  }
+
+  // ลบโพสต์
+  function deletePost(id) {
+    if (confirm('ต้องการลบโพสต์นี้ใช่หรือไม่?')) {
+      posts = posts.filter(post => post.id !== id);
+      saveData();
+      renderFeed();
+    }
+  }
+
+  // ล้างข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้น
+  function clearData() {
+    if (confirm('ต้องการล้างข้อมูลทั้งหมดกลับเป็นค่าเริ่มต้นใช่หรือไม่?')) {
+      localStorage.removeItem('community_app_posts');
+      location.reload();
+    }
+  }
+
+  // แสดงผลโพสต์ลงใน HTML
+  function renderFeed() {
+    const container = document.getElementById('feedContainer');
+    container.innerHTML = '';
+
+    const filteredPosts = currentFilter === 'all' 
+      ? posts 
+      : posts.filter(post => post.type === currentFilter);
+
+    if (filteredPosts.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-sub);">ยังไม่มีโพสต์ในหมวดหมู่นี้</div>';
+      return;
+    }
+
+    filteredPosts.forEach(post => {
+      const config = getPostConfig(post.type);
+      const isOwner = post.author === currentUser;
+
+      const html = `
+        <section class="announce-card">
+          <div class="announce-head ${config.cssClass}">
+            <span class="ic">${config.icon}</span>
+            <span>${config.text}</span>
+          </div>
+          <hr>
+          <p class="announce-title">${post.title}</p>
+          <p class="announce-body">${post.content}</p>
+          <div class="announce-meta">
+            <span>โดย: ${post.author} • เวลา ${formatTime(post.timestamp)}</span>
+            ${isOwner ? `<button class="delete-btn" onclick="deletePost(${post.id})">ลบโพสต์</button>` : ''}
+          </div>
+        </section>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+    });
+  }
+
+  // จัดการเมื่อกดปุ่มโพสต์
+  document.getElementById('postForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const newPost = {
+      id: Date.now(),
+      type: document.getElementById('postType').value,
+      title: document.getElementById('postTitle').value,
+      content: document.getElementById('postContent').value,
+      author: currentUser,
+      timestamp: Date.now()
+    };
+
+    posts.unshift(newPost); // เพิ่มไว้บนสุด
+    saveData();
+    
+    // รีเซ็ตฟอร์ม และสลับกลับไปดูหมวดหมู่ทั้งหมด
+    this.reset();
+    if (currentFilter !== 'all') {
+      document.querySelector('.tab-btn[onclick="setFilter(\'all\')"]').click();
+    } else {
+      renderFeed();
+    }
+  });
+
+  // โหลดข้อมูลครั้งแรกเมื่อเปิดหน้าเว็บ
+  loadData();
+  renderFeed();
+</script>
+
+</body>
+</html>
