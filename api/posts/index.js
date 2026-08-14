@@ -1,5 +1,21 @@
-import { supabase, POST_TYPES, fail, ipHash, isDevRequest } from '../_lib.js';
-import { checkPostLimit, hasIpColumn, POST_LIMIT } from '../_rate-limit.js';
+import {
+  supabase,
+  POST_TYPES,
+  MAX_IMAGES,
+  currentUser,
+  fail,
+  ipHash,
+  isDevRequest,
+  readBody,
+  withImageUrls
+} from '../_lib.js';
+import { checkIpPostLimit, checkMemberPostLimit, MEMBER_LIMIT } from '../_rate-limit.js';
+
+const SELECT = 'id, type, title, content, author, user_id, image_paths, created_at';
+
+// รับเฉพาะ path ที่ /api/upload เป็นคนตั้งชื่อให้เท่านั้น
+// กันคนส่ง path ไปชี้ไฟล์อื่นใน bucket
+const PATH_RE = /^\d{4}-\d{2}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp)$/;
 
 export default async function handler(req, res) {
   if (req.method === 'GET') return list(req, res);
@@ -14,7 +30,7 @@ async function list(req, res) {
 
   let query = supabase
     .from('posts')
-    .select('id, type, title, content, author, created_at')
+    .select(SELECT)
     .order('created_at', { ascending: false })
     .limit(200);
 
@@ -30,42 +46,65 @@ async function list(req, res) {
   }
 
   res.setHeader('Cache-Control', 'no-store');
-  return res.status(200).json({ posts: data });
+  return res.status(200).json({ posts: data.map(withImageUrls) });
 }
 
 async function create(req, res) {
-  const body = typeof req.body === 'string' ? safeParse(req.body) : req.body;
+  res.setHeader('Cache-Control', 'no-store');
+
+  // ชื่อผู้โพสต์มาจากบัญชีที่ล็อกอิน ไม่ได้มาจากสิ่งที่ browser ส่งมาอีกต่อไป
+  const dev = isDevRequest(req);
+  const user = dev ? null : await currentUser(req);
+
+  if (!dev) {
+    if (!user) return fail(res, 401, 'กรุณาเข้าสู่ระบบก่อนโพสต์');
+    if (user.status === 'pending') return fail(res, 403, 'บัญชีของคุณรอผู้ดูแลอนุมัติอยู่');
+    if (user.status !== 'approved') return fail(res, 403, 'บัญชีนี้ไม่ได้รับอนุมัติให้โพสต์');
+  }
+
+  const body = readBody(req);
   if (!body) return fail(res, 400, 'Invalid JSON body');
 
   const type = String(body.type ?? '');
   const title = String(body.title ?? '').trim();
   const content = String(body.content ?? '').trim();
-  const author = String(body.author ?? '').trim();
 
-  if (!POST_TYPES.includes(type)) return fail(res, 400, 'Invalid type');
-  if (!title || title.length > 200) return fail(res, 400, 'Invalid title');
-  if (!content || content.length > 4000) return fail(res, 400, 'Invalid content');
-  if (!author || author.length > 60) return fail(res, 400, 'Invalid author');
+  if (!POST_TYPES.includes(type)) return fail(res, 400, 'เลือกหมวดหมู่ไม่ถูกต้อง');
+  if (!title || title.length > 200) return fail(res, 400, 'หัวข้อต้องยาว 1-200 ตัว');
+  if (!content || content.length > 4000) return fail(res, 400, 'รายละเอียดต้องยาว 1-4000 ตัว');
+
+  const imagePaths = Array.isArray(body.image_paths) ? body.image_paths.map(String) : [];
+  if (imagePaths.length > MAX_IMAGES) return fail(res, 400, `แนบรูปได้สูงสุด ${MAX_IMAGES} รูป`);
+  if (imagePaths.some(p => !PATH_RE.test(p))) return fail(res, 400, 'รูปแนบไม่ถูกต้อง');
 
   const hash = ipHash(req);
-  const isDev = isDevRequest(req);
 
-  // dev โพสต์ได้ไม่จำกัด คนทั่วไปติด rate limit
-  if (!isDev) {
-    const gate = await checkPostLimit(hash);
-    if (!gate.allowed) {
-      res.setHeader('Retry-After', Math.ceil(gate.retryAfterMs / 1000));
-      return fail(res, 429, `โพสต์ได้สูงสุด ${POST_LIMIT} ครั้งต่อ 10 นาที กรุณารอสักครู่`);
+  if (!dev) {
+    const byMember = await checkMemberPostLimit(user.id);
+    if (!byMember.allowed) {
+      res.setHeader('Retry-After', Math.ceil(byMember.retryAfterMs / 1000));
+      return fail(res, 429, `โพสต์ได้สูงสุด ${MEMBER_LIMIT} ครั้งต่อ 10 นาที กรุณารอสักครู่`);
+    }
+
+    const byIp = await checkIpPostLimit(hash);
+    if (!byIp.allowed) {
+      res.setHeader('Retry-After', Math.ceil(byIp.retryAfterMs / 1000));
+      return fail(res, 429, 'เครื่องนี้โพสต์ถี่เกินไป กรุณารอสักครู่');
     }
   }
 
-  const row = { type, title, content, author };
-  if (await hasIpColumn()) row.ip_hash = hash;
-
   const { data, error } = await supabase
     .from('posts')
-    .insert(row)
-    .select('id, type, title, content, author, created_at')
+    .insert({
+      type,
+      title,
+      content,
+      author: dev ? 'ผู้ดูแลระบบ' : user.username,
+      user_id: dev ? null : user.id,
+      image_paths: imagePaths,
+      ip_hash: hash
+    })
+    .select(SELECT)
     .single();
 
   if (error) {
@@ -73,13 +112,5 @@ async function create(req, res) {
     return fail(res, 500, 'Database error');
   }
 
-  return res.status(201).json({ post: data });
-}
-
-function safeParse(raw) {
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  return res.status(201).json({ post: withImageUrls(data) });
 }

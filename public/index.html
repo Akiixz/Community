@@ -42,7 +42,8 @@
     *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
   }
 
-  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
+  input:focus-visible, textarea:focus-visible, select:focus-visible{
     outline:3px solid var(--focus);
     outline-offset:3px;
     border-radius:8px;
@@ -57,14 +58,16 @@
     top:0;
     z-index:20;
     box-shadow:0 6px 20px rgba(13,71,161,0.25);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
   }
   .header-inner{
     display:flex;
     align-items:center;
     gap:14px;
+    min-width:0;
   }
   .logo-badge{
     width:52px;height:52px;flex:none;
@@ -75,7 +78,7 @@
   }
   header h1{
     margin:0;
-    font-size:clamp(22px,5vw,28px);
+    font-size:clamp(20px,5vw,28px);
     font-weight:800;
     line-height:1.2;
   }
@@ -86,24 +89,30 @@
   }
   .header-actions{
     display:flex;
+    flex-direction:column;
+    align-items:flex-end;
     gap:8px;
     flex:none;
   }
-  .clear-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 13px;
+  .clear-btn{
+    background:rgba(255,255,255,0.2);
+    border:none;
+    color:#fff;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13px;
   }
-  .clear-btn.dev-on{
-    background:#FFD54F;
-    color:var(--navy-ink);
-    font-weight:700;
+  .who{
+    font-size:12px;
+    color:rgba(255,255,255,0.8);
+    max-width:150px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
   }
+  .who b{color:#FFD54F;}
 
   main{
     max-width:640px;
@@ -121,7 +130,7 @@
     color:#fff;
     border:none;
     border-radius:22px;
-    padding:22px 22px;
+    padding:22px;
     cursor:pointer;
     box-shadow:0 10px 28px rgba(211,47,47,0.35);
     transition:transform .15s ease, box-shadow .15s ease;
@@ -132,130 +141,273 @@
     transform:translateY(-2px);
     box-shadow:0 14px 34px rgba(211,47,47,0.45);
   }
-  .emergency-btn:active{ transform:translateY(0); }
+  .emergency-btn:active{transform:translateY(0);}
   @keyframes pulse-shadow{
-    0%,100%{ box-shadow:0 10px 28px rgba(211,47,47,0.35); }
-    50%{ box-shadow:0 10px 34px rgba(211,47,47,0.55); }
+    0%,100%{box-shadow:0 10px 28px rgba(211,47,47,0.35);}
+    50%{box-shadow:0 10px 34px rgba(211,47,47,0.55);}
   }
   .emergency-icon{
     width:56px;height:56px;flex:none;
     display:flex;align-items:center;justify-content:center;
     font-size:34px;
   }
-  .emergency-text .title{
-    font-size:22px;
-    font-weight:800;
-    display:block;
-  }
-  .emergency-text .sub{
-    font-size:15px;
-    color:rgba(255,255,255,0.85);
-    display:block;
-    margin-top:2px;
-  }
+  .emergency-text .title{font-size:22px;font-weight:800;display:block;}
+  .emergency-text .sub{font-size:15px;color:rgba(255,255,255,0.85);display:block;margin-top:2px;}
 
-  /* ---------- Section title ---------- */
   .section-title{
     font-size:21px;
     font-weight:800;
     color:var(--navy-800);
     margin:30px 0 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .section-title .count{
+    font-size:13px;
+    font-weight:600;
+    color:#fff;
+    background:var(--red);
+    border-radius:20px;
+    padding:2px 10px;
   }
 
-  /* ---------- Forms & Inputs ---------- */
-  .post-form-card {
-    background: var(--card);
-    border: 2px solid var(--line);
-    border-radius: 18px;
-    padding: 18px;
-    margin-bottom: 26px;
+  /* ---------- Cards & forms ---------- */
+  .panel{
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:26px;
   }
-  .form-group {
-    margin-bottom: 12px;
+  .form-group{margin-bottom:12px;}
+  .form-group label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    color:var(--navy-800);
+    margin-bottom:6px;
   }
-  .form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--navy-800);
-    margin-bottom: 6px;
+  .hint{
+    font-size:13px;
+    color:var(--text-sub);
+    margin:-2px 0 6px;
+    line-height:1.5;
   }
-  .form-control {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #CFD8DC;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 15px;
-    background: #F8FAFC;
-    color: var(--text-main);
+  .form-control{
+    width:100%;
+    padding:12px;
+    border:1px solid #CFD8DC;
+    border-radius:10px;
+    font-family:inherit;
+    font-size:15px;
+    background:#F8FAFC;
+    color:var(--text-main);
   }
-  .form-control:focus {
-    outline: none;
-    border-color: var(--navy-900);
-    background: #fff;
+  .form-control:focus{
+    outline:none;
+    border-color:var(--navy-900);
+    background:#fff;
   }
-  .submit-btn {
-    width: 100%;
-    background: var(--navy-900);
-    color: white;
-    border: none;
-    padding: 14px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    margin-top: 8px;
+  textarea.form-control{resize:vertical;}
+  .submit-btn{
+    width:100%;
+    background:var(--navy-900);
+    color:#fff;
+    border:none;
+    padding:14px;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    margin-top:8px;
   }
-  .submit-btn:disabled {
-    opacity: .6;
-    cursor: progress;
+  .submit-btn:disabled{opacity:.6;cursor:progress;}
+  .link-btn{
+    background:none;
+    border:none;
+    color:var(--navy-900);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    padding:8px 0 0;
+    text-decoration:underline;
   }
+
+  .switcher{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .switcher button{
+    flex:1;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#F8FAFC;
+    color:var(--text-sub);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .switcher button.active{
+    background:var(--navy-800);
+    color:#fff;
+    border-color:var(--navy-800);
+  }
+
+  .notice{
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:26px;
+    font-size:15px;
+    line-height:1.6;
+  }
+  .notice h3{margin:0 0 6px;font-size:17px;}
+  .notice p{margin:0;}
+  .notice.wait{background:#FFF8E1;border:2px solid #FFE082;color:#7A5900;}
+  .notice.stop{background:#FFEBEE;border:2px solid #FFCDD2;color:var(--red-dark);}
+  .notice.info{background:#E8F0FE;border:2px solid var(--line);color:var(--navy-ink);}
+
+  .form-error{
+    background:#FFEBEE;
+    border:1px solid #FFCDD2;
+    color:var(--red-dark);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:14px;
+    margin-bottom:12px;
+  }
+
+  /* ---------- Image picker ---------- */
+  .image-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .thumb{
+    position:relative;
+    width:76px;
+    height:76px;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid #CFD8DC;
+    background:#ECEFF1;
+    flex:none;
+  }
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb button{
+    position:absolute;
+    top:3px;right:3px;
+    width:22px;height:22px;
+    border-radius:50%;
+    border:none;
+    background:rgba(0,0,0,0.62);
+    color:#fff;
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    padding:0;
+  }
+  .thumb.loading{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    color:var(--text-sub);
+  }
+  .pick-btn{
+    width:76px;height:76px;
+    border-radius:12px;
+    border:2px dashed #B0BEC5;
+    background:#F8FAFC;
+    color:var(--text-sub);
+    font-family:inherit;
+    font-size:26px;
+    cursor:pointer;
+    flex:none;
+    line-height:1;
+  }
+  .pick-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  /* ---------- Member review ---------- */
+  .member{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:12px;
+    background:#F8FAFC;
+  }
+  .member:last-child{margin-bottom:0;}
+  .member .name{font-weight:700;font-size:16px;color:var(--navy-800);}
+  .member .meta{font-size:12px;color:#9AA7B4;margin-top:2px;}
+  .member .intro{
+    font-size:14px;
+    color:var(--text-sub);
+    margin:8px 0 12px;
+    white-space:pre-wrap;
+    line-height:1.55;
+  }
+  .member .actions{display:flex;gap:8px;}
+  .member .actions button{
+    flex:1;
+    padding:9px;
+    border-radius:9px;
+    border:none;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    color:#fff;
+  }
+  .btn-ok{background:var(--green);}
+  .btn-no{background:var(--red);}
 
   /* ---------- Tabs ---------- */
-  .tabs {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    margin-bottom: 16px;
-    scrollbar-width: none;
+  .tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:8px;
+    margin-bottom:16px;
+    scrollbar-width:none;
   }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab-btn {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--line);
-    background: var(--card);
-    color: var(--text-sub);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    padding:8px 16px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--text-sub);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
   }
-  .tab-btn.active {
-    background: var(--navy-800);
-    color: white;
-    border-color: var(--navy-800);
+  .tab-btn.active{
+    background:var(--navy-800);
+    color:#fff;
+    border-color:var(--navy-800);
   }
 
-  /* ---------- Announcement card (Dynamic) ---------- */
+  /* ---------- Post card ---------- */
   .announce-card{
     margin-bottom:16px;
     background:var(--card);
     border:2px solid var(--line);
     border-radius:18px;
     padding:18px;
-    animation: fadeIn 0.3s ease-out;
+    animation:fadeIn .3s ease-out;
   }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
   }
   .announce-head{
     display:flex;
@@ -264,53 +416,95 @@
     font-size:19px;
     font-weight:800;
   }
-  .announce-head .ic{ font-size:24px; }
-  .announce-head.alert { color: var(--red); }
-  .announce-head.market { color: var(--orange); }
-  .announce-head.announcement { color: var(--navy-900); }
+  .announce-head .ic{font-size:24px;}
+  .announce-head.alert{color:var(--red);}
+  .announce-head.market{color:var(--orange);}
+  .announce-head.announcement{color:var(--navy-900);}
 
-  hr{
-    border:none;
-    border-top:1px solid #E3EAF1;
-    margin:14px 0;
-  }
-  .announce-title{
-    font-size:17px;
-    font-weight:700;
-    margin:0 0 4px;
-    color:#1a1a1a;
-  }
+  hr{border:none;border-top:1px solid #E3EAF1;margin:14px 0;}
+  .announce-title{font-size:17px;font-weight:700;margin:0 0 4px;color:#1a1a1a;}
   .announce-body{
     font-size:15px;
     color:var(--text-sub);
     margin:0;
     line-height:1.55;
-    white-space: pre-wrap;
+    white-space:pre-wrap;
   }
-  .announce-meta {
-    margin-top: 12px;
-    font-size: 13px;
-    color: #9AA7B4;
-    display: flex;
-    justify-content: space-between;
+  .photo-grid{
+    display:grid;
+    gap:6px;
+    margin-top:12px;
   }
-  .delete-btn {
-    background: none;
-    border: none;
-    color: var(--red);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
+  .photo-grid.n1{grid-template-columns:1fr;}
+  .photo-grid.n2,.photo-grid.n4{grid-template-columns:1fr 1fr;}
+  .photo-grid.n3{grid-template-columns:1fr 1fr 1fr;}
+  .photo-grid button{
+    padding:0;
+    border:none;
+    background:#ECEFF1;
+    border-radius:12px;
+    overflow:hidden;
+    cursor:zoom-in;
+    aspect-ratio:4/3;
+  }
+  .photo-grid.n1 button{aspect-ratio:16/10;}
+  .photo-grid img{width:100%;height:100%;object-fit:cover;display:block;}
+
+  .announce-meta{
+    margin-top:12px;
+    font-size:13px;
+    color:#9AA7B4;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .delete-btn{
+    background:none;
+    border:none;
+    color:var(--red);
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    flex:none;
   }
 
-  .state-box {
-    text-align: center;
-    padding: 20px;
-    color: var(--text-sub);
-    font-size: 15px;
+  .state-box{
+    text-align:center;
+    padding:20px;
+    color:var(--text-sub);
+    font-size:15px;
   }
-  .state-box.error { color: var(--red); }
+  .state-box.error{color:var(--red);}
+
+  /* ---------- Lightbox ---------- */
+  .lightbox{
+    position:fixed;
+    inset:0;
+    background:rgba(6,14,26,0.92);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+  }
+  .lightbox[hidden]{display:none;}
+  .lightbox img{
+    max-width:100%;
+    max-height:100%;
+    border-radius:10px;
+  }
+  .lightbox .close{
+    position:absolute;
+    top:16px;right:16px;
+    background:rgba(255,255,255,0.16);
+    color:#fff;
+    border:none;
+    width:42px;height:42px;
+    border-radius:50%;
+    font-size:20px;
+    cursor:pointer;
+  }
 
   footer{
     text-align:center;
@@ -331,8 +525,11 @@
     </div>
   </div>
   <div class="header-actions">
-    <button class="clear-btn" id="devBtn" type="button">โหมด dev</button>
-    <button class="clear-btn" id="refreshBtn" type="button">รีเฟรช</button>
+    <span class="who" id="whoLabel"></span>
+    <div style="display:flex;gap:8px;">
+      <button class="clear-btn" id="authBtn" type="button">เข้าสู่ระบบ</button>
+      <button class="clear-btn" id="refreshBtn" type="button">รีเฟรช</button>
+    </div>
   </div>
 </header>
 
@@ -345,38 +542,14 @@
     </span>
   </button>
 
-  <h2 class="section-title">สร้างประกาศใหม่</h2>
+  <!-- พื้นที่บัญชี: สมัคร / เข้าสู่ระบบ / รออนุมัติ / ฟอร์มโพสต์ -->
+  <div id="accountArea"></div>
 
-  <!-- Form สำหรับโพสต์ -->
-  <div class="post-form-card">
-    <form id="postForm">
-      <div class="form-group">
-        <label for="postAuthor">ชื่อผู้โพสต์</label>
-        <input type="text" id="postAuthor" class="form-control" maxlength="60" placeholder="เช่น ป้าศรี" required>
-      </div>
-      <div class="form-group">
-        <label for="postType">หมวดหมู่</label>
-        <select id="postType" class="form-control" required>
-          <option value="announcement">📢 ประกาศจากชุมชน</option>
-          <option value="market">🛍️ ซื้อขาย / แลกเปลี่ยน</option>
-          <option value="alert">⚡ แจ้งเหตุฉุกเฉิน</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="postTitle">หัวข้อ</label>
-        <input type="text" id="postTitle" class="form-control" maxlength="200" placeholder="ระบุหัวข้อ..." required>
-      </div>
-      <div class="form-group">
-        <label for="postContent">รายละเอียด</label>
-        <textarea id="postContent" class="form-control" rows="3" maxlength="4000" placeholder="พิมพ์รายละเอียดที่นี่..." required></textarea>
-      </div>
-      <button type="submit" class="submit-btn" id="submitBtn">โพสต์ลงชุมชน</button>
-    </form>
-  </div>
+  <!-- แผงอนุมัติสมาชิก เห็นเฉพาะผู้ดูแล -->
+  <div id="adminArea"></div>
 
   <h2 class="section-title">กระดานข่าวชุมชน</h2>
 
-  <!-- แถบหมวดหมู่ -->
   <div class="tabs" id="filterTabs">
     <button class="tab-btn active" type="button" data-filter="all">🌐 ทั้งหมด</button>
     <button class="tab-btn" type="button" data-filter="announcement">📢 ประกาศ</button>
@@ -384,84 +557,42 @@
     <button class="tab-btn" type="button" data-filter="alert">⚡ ฉุกเฉิน</button>
   </div>
 
-  <!-- พื้นที่แสดงโพสต์ -->
   <div id="feedContainer" aria-live="polite"></div>
-
 </main>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="close" id="lightboxClose" type="button" aria-label="ปิดรูป">✕</button>
+  <img id="lightboxImg" alt="รูปแนบในโพสต์ ขยายเต็มจอ">
+</div>
 
 <footer>แพลตฟอร์มเพื่อชุมชน &middot; เวอร์ชันเว็บ</footer>
 
 <script>
   const API = '/api/posts';
+  const MAX_IMAGES = 4;
+  const TOKEN_KEY = 'community_app_token';
+  const TOKEN_EXP_KEY = 'community_app_token_expires';
 
-  // ชื่อผู้ใช้เก็บไว้ในเครื่อง เพื่อรู้ว่าโพสต์ไหนเป็นของเรา (ยังไม่มีระบบ login จริง)
-  let currentUser = localStorage.getItem('community_app_user') || '';
+  // auth.dev = ผู้ดูแล, auth.user = สมาชิก (มี status: pending / approved / rejected)
+  let auth = { dev: false, user: null };
   let currentFilter = 'all';
   let posts = [];
+  let attached = [];      // รูปที่อัปโหลดแล้ว รอแนบไปกับโพสต์
+  let uploading = 0;
+  let authMode = 'login'; // login หรือ register
 
   const feedEl = document.getElementById('feedContainer');
-  const authorEl = document.getElementById('postAuthor');
-  const submitBtn = document.getElementById('submitBtn');
-  const devBtn = document.getElementById('devBtn');
+  const accountEl = document.getElementById('accountArea');
+  const adminEl = document.getElementById('adminArea');
+  const whoEl = document.getElementById('whoLabel');
+  const authBtn = document.getElementById('authBtn');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
 
-  authorEl.value = currentUser;
-
-  // ---------- บัญชี dev (ผู้ดูแล) ----------
-  const DEV_TOKEN_KEY = 'community_app_dev_token';
-  const DEV_EXP_KEY = 'community_app_dev_expires';
-
-  function devToken() {
-    const token = localStorage.getItem(DEV_TOKEN_KEY);
-    const expires = Number(localStorage.getItem(DEV_EXP_KEY));
-    if (!token || !expires || Date.now() >= expires) {
-      clearDevToken();
-      return null;
-    }
-    return token;
-  }
-
-  function clearDevToken() {
-    localStorage.removeItem(DEV_TOKEN_KEY);
-    localStorage.removeItem(DEV_EXP_KEY);
-  }
-
-  function isDev() {
-    return devToken() !== null;
-  }
-
-  function authHeaders(extra) {
-    const headers = Object.assign({}, extra);
-    const token = devToken();
-    if (token) headers.Authorization = 'Bearer ' + token;
-    return headers;
-  }
-
-  function updateDevUi() {
-    const on = isDev();
-    devBtn.textContent = on ? '🔓 dev — ออกจากระบบ' : 'โหมด dev';
-    devBtn.classList.toggle('dev-on', on);
-  }
-
-  async function devLogin() {
-    const password = prompt('รหัสผ่านบัญชี dev:');
-    if (!password) return;
-    try {
-      const data = await request('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-      });
-      localStorage.setItem(DEV_TOKEN_KEY, data.token);
-      localStorage.setItem(DEV_EXP_KEY, String(data.expires_at));
-      updateDevUi();
-      renderFeed();
-    } catch (err) {
-      alert('เข้าสู่ระบบไม่สำเร็จ: ' + err.message);
-    }
-  }
+  /* ---------- พื้นฐาน ---------- */
 
   // กัน XSS — เนื้อหามาจาก database ที่ทุกคนโพสต์ร่วมกัน
-  function escapeHtml(str) {
+  function escapeHtml(str){
     return String(str)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -470,53 +601,492 @@
       .replace(/'/g, '&#39;');
   }
 
-  function formatTime(iso) {
+  function formatTime(iso){
     const date = new Date(iso);
     return date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
   }
 
-  function getPostConfig(type) {
-    switch (type) {
+  function formatDate(iso){
+    return new Date(iso).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+  }
+
+  function getPostConfig(type){
+    switch(type){
       case 'alert':  return { text: 'แจ้งเหตุฉุกเฉิน', icon: '⚠️', cssClass: 'alert' };
       case 'market': return { text: 'ซื้อขาย / แลกเปลี่ยน', icon: '🛍️', cssClass: 'market' };
       default:       return { text: 'ประกาศจากชุมชน', icon: '📢', cssClass: 'announcement' };
     }
   }
 
-  function showState(message, isError) {
+  function showState(message, isError){
     feedEl.innerHTML = '<div class="state-box' + (isError ? ' error' : '') + '">' + escapeHtml(message) + '</div>';
   }
 
-  async function request(url, options) {
+  /* ---------- token ---------- */
+
+  function getToken(){
+    const token = localStorage.getItem(TOKEN_KEY);
+    const expires = Number(localStorage.getItem(TOKEN_EXP_KEY));
+    if(!token || !expires || Date.now() >= expires){
+      clearToken();
+      return null;
+    }
+    return token;
+  }
+
+  function saveToken(token, expiresAt){
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(TOKEN_EXP_KEY, String(expiresAt));
+  }
+
+  function clearToken(){
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_EXP_KEY);
+  }
+
+  function authHeaders(extra){
+    const headers = Object.assign({}, extra);
+    const token = getToken();
+    if(token) headers.Authorization = 'Bearer ' + token;
+    return headers;
+  }
+
+  async function request(url, options){
     const res = await fetch(url, options);
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+    if(!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
     return data;
   }
 
-  async function loadPosts() {
+  async function loadIdentity(){
+    if(!getToken()){
+      auth = { dev: false, user: null };
+      return;
+    }
+    try{
+      auth = await request('/api/auth', { headers: authHeaders() });
+      if(!auth.dev && !auth.user) clearToken();
+    }catch{
+      auth = { dev: false, user: null };
+      clearToken();
+    }
+  }
+
+  function canPost(){
+    return auth.dev || (auth.user && auth.user.status === 'approved');
+  }
+
+  /* ---------- ส่วนหัว ---------- */
+
+  function renderHeader(){
+    if(auth.dev){
+      whoEl.innerHTML = '<b>โหมดผู้ดูแล</b>';
+      authBtn.textContent = 'ออกจากระบบ';
+    }else if(auth.user){
+      whoEl.textContent = auth.user.username;
+      authBtn.textContent = 'ออกจากระบบ';
+    }else{
+      whoEl.textContent = '';
+      authBtn.textContent = 'เข้าสู่ระบบ';
+    }
+  }
+
+  /* ---------- พื้นที่บัญชี ---------- */
+
+  function renderAccount(){
+    if(canPost()){
+      renderPostForm();
+      return;
+    }
+
+    if(auth.user && auth.user.status === 'pending'){
+      accountEl.innerHTML = `
+        <div class="notice wait">
+          <h3>⏳ บัญชีของคุณรออนุมัติ</h3>
+          <p>ผู้ดูแลจะตรวจข้อมูลที่คุณกรอกไว้ก่อน อนุมัติแล้วจะโพสต์ได้ทันที กดรีเฟรชเพื่อเช็กสถานะ</p>
+        </div>`;
+      return;
+    }
+
+    if(auth.user && auth.user.status === 'rejected'){
+      accountEl.innerHTML = `
+        <div class="notice stop">
+          <h3>บัญชีนี้ไม่ได้รับอนุมัติ</h3>
+          <p>ติดต่อผู้ดูแลหมู่บ้านถ้าคิดว่าเป็นความเข้าใจผิด</p>
+        </div>`;
+      return;
+    }
+
+    renderAuthForm();
+  }
+
+  function renderAuthForm(){
+    const isLogin = authMode === 'login';
+    accountEl.innerHTML = `
+      <h2 class="section-title">เข้าสู่ระบบเพื่อโพสต์</h2>
+      <div class="panel">
+        <div class="switcher">
+          <button type="button" data-mode="login" class="${isLogin ? 'active' : ''}">เข้าสู่ระบบ</button>
+          <button type="button" data-mode="register" class="${isLogin ? '' : 'active'}">สมัครสมาชิก</button>
+        </div>
+        <div id="authError"></div>
+        <form id="authForm">
+          <div class="form-group">
+            <label for="authUsername">ชื่อผู้ใช้</label>
+            <input type="text" id="authUsername" class="form-control" maxlength="30"
+                   autocomplete="username" placeholder="เช่น ป้าศรี" required>
+          </div>
+          <div class="form-group">
+            <label for="authPassword">รหัสผ่าน</label>
+            <input type="password" id="authPassword" class="form-control" maxlength="200"
+                   autocomplete="${isLogin ? 'current-password' : 'new-password'}"
+                   placeholder="${isLogin ? 'รหัสผ่านของคุณ' : 'อย่างน้อย 8 ตัวอักษร'}" required>
+          </div>
+          ${isLogin ? '' : `
+          <div class="form-group">
+            <label for="authIntro">แนะนำตัว</label>
+            <p class="hint">ผู้ดูแลใช้ข้อความนี้ตัดสินว่าจะอนุมัติไหม บอกชื่อจริงกับบ้านเลขที่หรือซอยที่อยู่จะช่วยให้อนุมัติเร็วขึ้น</p>
+            <textarea id="authIntro" class="form-control" rows="3" maxlength="500"
+                      placeholder="เช่น ป้าศรี ขายผัก อยู่บ้านเลขที่ 42 ซอย 2" required></textarea>
+          </div>`}
+          <button type="submit" class="submit-btn" id="authSubmit">${isLogin ? 'เข้าสู่ระบบ' : 'ส่งใบสมัคร'}</button>
+        </form>
+        <button type="button" class="link-btn" id="devLoginLink">เข้าสู่ระบบในฐานะผู้ดูแล</button>
+      </div>`;
+
+    accountEl.querySelectorAll('.switcher button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        authMode = btn.dataset.mode;
+        renderAccount();
+      });
+    });
+
+    document.getElementById('authForm').addEventListener('submit', submitAuth);
+    document.getElementById('devLoginLink').addEventListener('click', devLogin);
+  }
+
+  function renderPostForm(){
+    const label = auth.dev ? 'ผู้ดูแลระบบ' : auth.user.username;
+    accountEl.innerHTML = `
+      <h2 class="section-title">สร้างประกาศใหม่</h2>
+      <div class="panel">
+        <p class="hint">โพสต์ในชื่อ <strong>${escapeHtml(label)}</strong></p>
+        <div id="postError"></div>
+        <form id="postForm">
+          <div class="form-group">
+            <label for="postType">หมวดหมู่</label>
+            <select id="postType" class="form-control" required>
+              <option value="announcement">📢 ประกาศจากชุมชน</option>
+              <option value="market">🛍️ ซื้อขาย / แลกเปลี่ยน</option>
+              <option value="alert">⚡ แจ้งเหตุฉุกเฉิน</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="postTitle">หัวข้อ</label>
+            <input type="text" id="postTitle" class="form-control" maxlength="200" placeholder="ระบุหัวข้อ..." required>
+          </div>
+          <div class="form-group">
+            <label for="postContent">รายละเอียด</label>
+            <textarea id="postContent" class="form-control" rows="3" maxlength="4000" placeholder="พิมพ์รายละเอียดที่นี่..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>รูปภาพ <span class="hint" style="display:inline;margin:0;">(ไม่บังคับ สูงสุด ${MAX_IMAGES} รูป)</span></label>
+            <div class="image-row" id="imageRow"></div>
+            <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" multiple hidden>
+          </div>
+          <button type="submit" class="submit-btn" id="submitBtn">โพสต์ลงชุมชน</button>
+        </form>
+      </div>`;
+
+    document.getElementById('postForm').addEventListener('submit', submitPost);
+    document.getElementById('imageInput').addEventListener('change', onPickImages);
+    renderImageRow();
+  }
+
+  function setError(containerId, message){
+    const box = document.getElementById(containerId);
+    if(!box) return;
+    box.innerHTML = message ? '<div class="form-error">' + escapeHtml(message) + '</div>' : '';
+  }
+
+  /* ---------- เข้าสู่ระบบ / สมัคร ---------- */
+
+  async function submitAuth(e){
+    e.preventDefault();
+    setError('authError', '');
+
+    const payload = {
+      kind: authMode,
+      username: document.getElementById('authUsername').value.trim(),
+      password: document.getElementById('authPassword').value
+    };
+    if(authMode === 'register'){
+      payload.intro = document.getElementById('authIntro').value.trim();
+    }
+
+    const btn = document.getElementById('authSubmit');
+    btn.disabled = true;
+    btn.textContent = 'กำลังส่ง...';
+    try{
+      const data = await request('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      saveToken(data.token, data.expires_at);
+      auth = { dev: false, user: data.user };
+      attached = [];
+      renderAll();
+      await loadPosts();
+    }catch(err){
+      setError('authError', err.message);
+      btn.disabled = false;
+      btn.textContent = authMode === 'login' ? 'เข้าสู่ระบบ' : 'ส่งใบสมัคร';
+    }
+  }
+
+  async function devLogin(){
+    const password = prompt('รหัสผ่านผู้ดูแล:');
+    if(!password) return;
+    try{
+      const data = await request('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'dev', password })
+      });
+      saveToken(data.token, data.expires_at);
+      auth = { dev: true, user: null };
+      attached = [];
+      renderAll();
+      await Promise.all([loadPosts(), loadPendingMembers()]);
+    }catch(err){
+      alert('เข้าสู่ระบบไม่สำเร็จ: ' + err.message);
+    }
+  }
+
+  function logout(){
+    if(!confirm('ออกจากระบบ?')) return;
+    clearToken();
+    auth = { dev: false, user: null };
+    attached = [];
+    authMode = 'login';
+    renderAll();
+    loadPosts();
+  }
+
+  /* ---------- แผงอนุมัติสมาชิก ---------- */
+
+  async function loadPendingMembers(){
+    if(!auth.dev){
+      adminEl.innerHTML = '';
+      return;
+    }
+    adminEl.innerHTML = '<div class="state-box">กำลังโหลดใบสมัคร...</div>';
+    try{
+      const data = await request('/api/users?status=pending', { headers: authHeaders() });
+      renderPendingMembers(data.users);
+    }catch(err){
+      adminEl.innerHTML = '<div class="state-box error">โหลดใบสมัครไม่สำเร็จ: ' + escapeHtml(err.message) + '</div>';
+    }
+  }
+
+  function renderPendingMembers(users){
+    if(users.length === 0){
+      adminEl.innerHTML = `
+        <h2 class="section-title">ใบสมัครสมาชิก</h2>
+        <div class="notice info"><p>ยังไม่มีใบสมัครที่รออนุมัติ</p></div>`;
+      return;
+    }
+
+    adminEl.innerHTML = `
+      <h2 class="section-title">ใบสมัครสมาชิก <span class="count">${users.length}</span></h2>
+      <div class="panel">
+        ${users.map(user => `
+          <div class="member" data-member="${user.id}">
+            <div class="name">${escapeHtml(user.username)}</div>
+            <div class="meta">สมัครเมื่อ ${escapeHtml(formatDate(user.created_at))} ${escapeHtml(formatTime(user.created_at))}</div>
+            <p class="intro">${escapeHtml(user.intro)}</p>
+            <div class="actions">
+              <button type="button" class="btn-ok" data-review="approved" data-id="${user.id}">อนุมัติ</button>
+              <button type="button" class="btn-no" data-review="rejected" data-id="${user.id}">ปฏิเสธ</button>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  async function reviewMember(id, status){
+    const card = adminEl.querySelector(`[data-member="${id}"]`);
+    if(card) card.querySelectorAll('button').forEach(b => { b.disabled = true; });
+    try{
+      await request('/api/users/' + id, {
+        method: 'PATCH',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ status })
+      });
+      await loadPendingMembers();
+    }catch(err){
+      alert('บันทึกไม่สำเร็จ: ' + err.message);
+      await loadPendingMembers();
+    }
+  }
+
+  /* ---------- รูปภาพ ---------- */
+
+  // ย่อรูปในเครื่องก่อนส่ง รูปจากมือถือใหญ่หลายเมกะไบต์
+  // ส่งตรงๆ จะชนลิมิตขนาด request ของ serverless
+  function shrink(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('อ่านไฟล์ไม่ได้'));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('ไฟล์นี้ไม่ใช่รูปภาพ'));
+        img.onload = () => {
+          const max = 1600;
+          const scale = Math.min(1, max / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          resolve(dataUrl.slice(dataUrl.indexOf(',') + 1));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function onPickImages(e){
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if(files.length === 0) return;
+
+    setError('postError', '');
+    const room = MAX_IMAGES - attached.length - uploading;
+    if(files.length > room){
+      setError('postError', `แนบได้อีก ${room} รูปเท่านั้น`);
+    }
+
+    for(const file of files.slice(0, Math.max(room, 0))){
+      uploading++;
+      renderImageRow();
+      try{
+        const base64 = await shrink(file);
+        const data = await request('/api/upload', {
+          method: 'POST',
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ data: base64 })
+        });
+        attached.push(data);
+      }catch(err){
+        setError('postError', 'อัปโหลดรูปไม่สำเร็จ: ' + err.message);
+      }finally{
+        uploading--;
+        renderImageRow();
+      }
+    }
+  }
+
+  function renderImageRow(){
+    const row = document.getElementById('imageRow');
+    if(!row) return;
+
+    const thumbs = attached.map((img, index) => `
+      <div class="thumb">
+        <img src="${escapeHtml(img.url)}" alt="รูปแนบที่ ${index + 1}">
+        <button type="button" data-remove="${index}" aria-label="เอารูปนี้ออก">✕</button>
+      </div>`).join('');
+
+    const spinners = Array.from({ length: uploading }, () =>
+      '<div class="thumb loading">กำลังส่ง</div>').join('');
+
+    const full = attached.length + uploading >= MAX_IMAGES;
+    row.innerHTML = thumbs + spinners +
+      `<button type="button" class="pick-btn" id="pickBtn" ${full ? 'disabled' : ''} aria-label="เพิ่มรูป">+</button>`;
+
+    const pick = document.getElementById('pickBtn');
+    if(pick) pick.addEventListener('click', () => document.getElementById('imageInput').click());
+
+    row.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        attached.splice(Number(btn.dataset.remove), 1);
+        renderImageRow();
+      });
+    });
+  }
+
+  /* ---------- โพสต์ ---------- */
+
+  async function submitPost(e){
+    e.preventDefault();
+    setError('postError', '');
+
+    if(uploading > 0){
+      setError('postError', 'รอรูปอัปโหลดให้เสร็จก่อน');
+      return;
+    }
+
+    const payload = {
+      type: document.getElementById('postType').value,
+      title: document.getElementById('postTitle').value.trim(),
+      content: document.getElementById('postContent').value.trim(),
+      image_paths: attached.map(img => img.path)
+    };
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'กำลังโพสต์...';
+    try{
+      await request(API, {
+        method: 'POST',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify(payload)
+      });
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postContent').value = '';
+      attached = [];
+      renderImageRow();
+      await loadPosts();
+    }catch(err){
+      setError('postError', err.message);
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'โพสต์ลงชุมชน';
+    }
+  }
+
+  async function loadPosts(){
     showState('กำลังโหลด...', false);
-    try {
+    try{
       const query = currentFilter === 'all' ? '' : '?type=' + encodeURIComponent(currentFilter);
       const data = await request(API + query);
       posts = data.posts;
       renderFeed();
-    } catch (err) {
+    }catch(err){
       showState('โหลดข้อมูลไม่สำเร็จ: ' + err.message, true);
     }
   }
 
-  function renderFeed() {
-    if (posts.length === 0) {
+  function renderFeed(){
+    if(posts.length === 0){
       showState('ยังไม่มีโพสต์ในหมวดหมู่นี้', false);
       return;
     }
 
     feedEl.innerHTML = posts.map(post => {
       const config = getPostConfig(post.type);
-      const dev = isDev();
-      const isOwner = currentUser && post.author === currentUser;
-      const canDelete = dev || isOwner;
+      const mine = auth.user && post.user_id === auth.user.id;
+      const canDelete = auth.dev || mine;
+      const images = post.images || [];
+
+      const gallery = images.length === 0 ? '' : `
+        <div class="photo-grid n${Math.min(images.length, 4)}">
+          ${images.map((url, index) => `
+            <button type="button" data-photo="${escapeHtml(url)}">
+              <img src="${escapeHtml(url)}" alt="รูปแนบที่ ${index + 1} ของโพสต์ ${escapeHtml(post.title)}" loading="lazy">
+            </button>`).join('')}
+        </div>`;
 
       return `
         <section class="announce-card">
@@ -527,32 +1097,43 @@
           <hr>
           <p class="announce-title">${escapeHtml(post.title)}</p>
           <p class="announce-body">${escapeHtml(post.content)}</p>
+          ${gallery}
           <div class="announce-meta">
-            <span>โดย: ${escapeHtml(post.author)} • เวลา ${formatTime(post.created_at)}</span>
-            ${canDelete ? `<button class="delete-btn" type="button" data-delete="${post.id}">${dev && !isOwner ? 'ลบโพสต์ (dev)' : 'ลบโพสต์'}</button>` : ''}
+            <span>โดย: ${escapeHtml(post.author)} • เวลา ${escapeHtml(formatTime(post.created_at))}</span>
+            ${canDelete ? `<button class="delete-btn" type="button" data-delete="${post.id}">${auth.dev && !mine ? 'ลบโพสต์ (ผู้ดูแล)' : 'ลบโพสต์'}</button>` : ''}
           </div>
-        </section>
-      `;
+        </section>`;
     }).join('');
   }
 
-  async function deletePost(id) {
-    if (!confirm('ต้องการลบโพสต์นี้ใช่หรือไม่?')) return;
-    // dev ลบได้ทุกโพสต์ด้วย token — คนทั่วไปยังต้องส่งชื่อตัวเองไปเทียบ
-    const url = isDev() ? `${API}/${id}` : `${API}/${id}?author=${encodeURIComponent(currentUser)}`;
-    try {
-      await request(url, { method: 'DELETE', headers: authHeaders() });
+  async function deletePost(id){
+    if(!confirm('ต้องการลบโพสต์นี้ใช่หรือไม่?')) return;
+    try{
+      await request(`${API}/${id}`, { method: 'DELETE', headers: authHeaders() });
       posts = posts.filter(post => post.id !== id);
       renderFeed();
-    } catch (err) {
+    }catch(err){
       alert('ลบไม่สำเร็จ: ' + err.message);
     }
   }
 
-  // ---------- Events ----------
+  /* ---------- รูปขยาย ---------- */
+
+  function openLightbox(url){
+    lightboxImg.src = url;
+    lightbox.hidden = false;
+  }
+
+  function closeLightbox(){
+    lightbox.hidden = true;
+    lightboxImg.src = '';
+  }
+
+  /* ---------- เหตุการณ์ ---------- */
+
   document.getElementById('filterTabs').addEventListener('click', (e) => {
     const btn = e.target.closest('.tab-btn');
-    if (!btn) return;
+    if(!btn) return;
     document.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
@@ -560,62 +1141,64 @@
   });
 
   feedEl.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-delete]');
-    if (btn) deletePost(Number(btn.dataset.delete));
+    const del = e.target.closest('[data-delete]');
+    if(del){
+      deletePost(Number(del.dataset.delete));
+      return;
+    }
+    const photo = e.target.closest('[data-photo]');
+    if(photo) openLightbox(photo.dataset.photo);
   });
 
-  document.getElementById('refreshBtn').addEventListener('click', loadPosts);
+  adminEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-review]');
+    if(btn) reviewMember(Number(btn.dataset.id), btn.dataset.review);
+  });
 
-  devBtn.addEventListener('click', () => {
-    if (!isDev()) return devLogin();
-    if (!confirm('ออกจากโหมด dev?')) return;
-    clearDevToken();
-    updateDevUi();
-    renderFeed();
+  document.getElementById('refreshBtn').addEventListener('click', refreshEverything);
+
+  authBtn.addEventListener('click', () => {
+    if(auth.dev || auth.user) return logout();
+    authMode = 'login';
+    renderAll();
+    const field = document.getElementById('authUsername');
+    if(field) field.focus();
   });
 
   document.getElementById('emergencyBtn').addEventListener('click', () => {
-    document.getElementById('postType').value = 'alert';
+    const typeField = document.getElementById('postType');
+    if(!typeField){
+      alert('เข้าสู่ระบบก่อนจึงจะแจ้งเหตุได้');
+      accountEl.scrollIntoView({ block: 'center' });
+      return;
+    }
+    typeField.value = 'alert';
     document.getElementById('postTitle').focus();
   });
 
-  document.getElementById('postForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const author = authorEl.value.trim();
-    if (!author) return;
-
-    currentUser = author;
-    localStorage.setItem('community_app_user', author);
-
-    const payload = {
-      type: document.getElementById('postType').value,
-      title: document.getElementById('postTitle').value.trim(),
-      content: document.getElementById('postContent').value.trim(),
-      author
-    };
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'กำลังโพสต์...';
-    try {
-      await request(API, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
-        body: JSON.stringify(payload)
-      });
-      document.getElementById('postTitle').value = '';
-      document.getElementById('postContent').value = '';
-      await loadPosts();
-    } catch (err) {
-      alert('โพสต์ไม่สำเร็จ: ' + err.message);
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'โพสต์ลงชุมชน';
-    }
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if(e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && !lightbox.hidden) closeLightbox();
   });
 
-  updateDevUi();
-  loadPosts();
+  /* ---------- เริ่มทำงาน ---------- */
+
+  function renderAll(){
+    renderHeader();
+    renderAccount();
+    if(!auth.dev) adminEl.innerHTML = '';
+  }
+
+  async function refreshEverything(){
+    await loadIdentity();
+    renderAll();
+    await Promise.all([loadPosts(), loadPendingMembers()]);
+  }
+
+  refreshEverything();
 </script>
 
 </body>
