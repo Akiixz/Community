@@ -21,7 +21,9 @@ const SIGNUP_LIMIT = 3;
 const SIGNUP_WINDOW_MS = 60 * 60 * 1000;
 
 // ตัวอักษรภาษาไหนก็ได้ ตัวเลข เว้นวรรค และ . _ - เท่านั้น
-const USERNAME_RE = /^[\p{L}\p{N} ._-]{3,30}$/u;
+// ต้องมี \p{M} ด้วย เพราะสระกับวรรณยุกต์ไทยเป็น combining mark ไม่ใช่ \p{L}
+// ขาดไปแล้วชื่ออย่าง "ป้าศรี" จะสมัครไม่ผ่าน
+const USERNAME_RE = /^[\p{L}\p{M}\p{N} ._-]{3,30}$/u;
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');

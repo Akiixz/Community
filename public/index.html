@@ -696,6 +696,7 @@
   function renderAccount(){
     if(canPost()){
       renderPostForm();
+      if(!auth.dev) appendDevLink();
       return;
     }
 
@@ -705,6 +706,7 @@
           <h3>⏳ บัญชีของคุณรออนุมัติ</h3>
           <p>ผู้ดูแลจะตรวจข้อมูลที่คุณกรอกไว้ก่อน อนุมัติแล้วจะโพสต์ได้ทันที กดรีเฟรชเพื่อเช็กสถานะ</p>
         </div>`;
+      appendDevLink();
       return;
     }
 
@@ -714,10 +716,24 @@
           <h3>บัญชีนี้ไม่ได้รับอนุมัติ</h3>
           <p>ติดต่อผู้ดูแลหมู่บ้านถ้าคิดว่าเป็นความเข้าใจผิด</p>
         </div>`;
+      appendDevLink();
       return;
     }
 
     renderAuthForm();
+  }
+
+  // ผู้ดูแลต้องเข้าโหมดผู้ดูแลได้จากทุกสถานะ ไม่ใช่เฉพาะตอนยังไม่ล็อกอิน
+  // ไม่งั้นสมัครสมาชิกไว้ในเครื่องเดียวกันแล้วจะเข้าไปอนุมัติใครไม่ได้เลย
+  function appendDevLink(){
+    const link = document.createElement('button');
+    link.type = 'button';
+    link.className = 'link-btn';
+    link.style.display = 'block';
+    link.style.margin = '-14px auto 26px';
+    link.textContent = 'เข้าสู่ระบบในฐานะผู้ดูแล';
+    link.addEventListener('click', devLogin);
+    accountEl.appendChild(link);
   }
 
   function renderAuthForm(){
