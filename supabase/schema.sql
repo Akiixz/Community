@@ -6,11 +6,13 @@ create table if not exists public.posts (
   title       text        not null check (char_length(title) between 1 and 200),
   content     text        not null check (char_length(content) between 1 and 4000),
   author      text        not null check (char_length(author) between 1 and 60),
+  ip_hash     text,
   created_at  timestamptz not null default now()
 );
 
 create index if not exists posts_created_at_idx on public.posts (created_at desc);
 create index if not exists posts_type_idx       on public.posts (type, created_at desc);
+create index if not exists posts_ip_hash_idx    on public.posts (ip_hash, created_at desc);
 
 -- เปิด RLS แล้วไม่สร้าง policy = ปิดตายจากฝั่ง anon key
 -- เข้าถึงได้เฉพาะ service_role key ที่อยู่ใน serverless function เท่านั้น

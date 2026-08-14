@@ -1,4 +1,4 @@
-import { supabase, fail } from '../_lib.js';
+import { supabase, fail, isDevRequest } from '../_lib.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'DELETE') {
@@ -9,16 +9,18 @@ export default async function handler(req, res) {
   const id = Number(req.query.id);
   if (!Number.isInteger(id) || id <= 0) return fail(res, 400, 'Invalid id');
 
-  const author = String(req.query.author ?? '').trim();
-  if (!author) return fail(res, 400, 'Missing author');
+  let query = supabase.from('posts').delete().eq('id', id);
 
-  // ยังไม่มีระบบ login จริง — เช็กแค่ชื่อผู้โพสต์ตรงกัน กันลบข้ามคนแบบผิวเผิน
-  const { data, error } = await supabase
-    .from('posts')
-    .delete()
-    .eq('id', id)
-    .eq('author', author)
-    .select('id');
+  if (isDevRequest(req)) {
+    // บัญชี dev = ผู้ดูแล ลบโพสต์ของใครก็ได้
+  } else {
+    // ยังไม่มีระบบ login จริง — เช็กแค่ชื่อผู้โพสต์ตรงกัน กันลบข้ามคนแบบผิวเผิน
+    const author = String(req.query.author ?? '').trim();
+    if (!author) return fail(res, 400, 'Missing author');
+    query = query.eq('author', author);
+  }
+
+  const { data, error } = await query.select('id');
 
   if (error) {
     console.error('delete post failed', error);

@@ -1,4 +1,5 @@
-import { supabase, POST_TYPES, fail } from '../_lib.js';
+import { supabase, POST_TYPES, fail, ipHash, isDevRequest } from '../_lib.js';
+import { checkPostLimit, hasIpColumn, POST_LIMIT } from '../_rate-limit.js';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') return list(req, res);
@@ -46,9 +47,24 @@ async function create(req, res) {
   if (!content || content.length > 4000) return fail(res, 400, 'Invalid content');
   if (!author || author.length > 60) return fail(res, 400, 'Invalid author');
 
+  const hash = ipHash(req);
+  const isDev = isDevRequest(req);
+
+  // dev โพสต์ได้ไม่จำกัด คนทั่วไปติด rate limit
+  if (!isDev) {
+    const gate = await checkPostLimit(hash);
+    if (!gate.allowed) {
+      res.setHeader('Retry-After', Math.ceil(gate.retryAfterMs / 1000));
+      return fail(res, 429, `โพสต์ได้สูงสุด ${POST_LIMIT} ครั้งต่อ 10 นาที กรุณารอสักครู่`);
+    }
+  }
+
+  const row = { type, title, content, author };
+  if (await hasIpColumn()) row.ip_hash = hash;
+
   const { data, error } = await supabase
     .from('posts')
-    .insert({ type, title, content, author })
+    .insert(row)
     .select('id, type, title, content, author, created_at')
     .single();
 

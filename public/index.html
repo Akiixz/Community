@@ -84,6 +84,11 @@
     font-size:15px;
     color:rgba(255,255,255,0.72);
   }
+  .header-actions{
+    display:flex;
+    gap:8px;
+    flex:none;
+  }
   .clear-btn {
     background: rgba(255,255,255,0.2);
     border: none;
@@ -93,6 +98,11 @@
     cursor: pointer;
     font-family: inherit;
     font-size: 13px;
+  }
+  .clear-btn.dev-on{
+    background:#FFD54F;
+    color:var(--navy-ink);
+    font-weight:700;
   }
 
   main{
@@ -320,7 +330,10 @@
       <p>ใช้งานง่าย เพื่อทุกคนในบ้าน</p>
     </div>
   </div>
-  <button class="clear-btn" id="refreshBtn" type="button">รีเฟรช</button>
+  <div class="header-actions">
+    <button class="clear-btn" id="devBtn" type="button">โหมด dev</button>
+    <button class="clear-btn" id="refreshBtn" type="button">รีเฟรช</button>
+  </div>
 </header>
 
 <main>
@@ -389,8 +402,63 @@
   const feedEl = document.getElementById('feedContainer');
   const authorEl = document.getElementById('postAuthor');
   const submitBtn = document.getElementById('submitBtn');
+  const devBtn = document.getElementById('devBtn');
 
   authorEl.value = currentUser;
+
+  // ---------- บัญชี dev (ผู้ดูแล) ----------
+  const DEV_TOKEN_KEY = 'community_app_dev_token';
+  const DEV_EXP_KEY = 'community_app_dev_expires';
+
+  function devToken() {
+    const token = localStorage.getItem(DEV_TOKEN_KEY);
+    const expires = Number(localStorage.getItem(DEV_EXP_KEY));
+    if (!token || !expires || Date.now() >= expires) {
+      clearDevToken();
+      return null;
+    }
+    return token;
+  }
+
+  function clearDevToken() {
+    localStorage.removeItem(DEV_TOKEN_KEY);
+    localStorage.removeItem(DEV_EXP_KEY);
+  }
+
+  function isDev() {
+    return devToken() !== null;
+  }
+
+  function authHeaders(extra) {
+    const headers = Object.assign({}, extra);
+    const token = devToken();
+    if (token) headers.Authorization = 'Bearer ' + token;
+    return headers;
+  }
+
+  function updateDevUi() {
+    const on = isDev();
+    devBtn.textContent = on ? '🔓 dev — ออกจากระบบ' : 'โหมด dev';
+    devBtn.classList.toggle('dev-on', on);
+  }
+
+  async function devLogin() {
+    const password = prompt('รหัสผ่านบัญชี dev:');
+    if (!password) return;
+    try {
+      const data = await request('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      localStorage.setItem(DEV_TOKEN_KEY, data.token);
+      localStorage.setItem(DEV_EXP_KEY, String(data.expires_at));
+      updateDevUi();
+      renderFeed();
+    } catch (err) {
+      alert('เข้าสู่ระบบไม่สำเร็จ: ' + err.message);
+    }
+  }
 
   // กัน XSS — เนื้อหามาจาก database ที่ทุกคนโพสต์ร่วมกัน
   function escapeHtml(str) {
@@ -446,7 +514,9 @@
 
     feedEl.innerHTML = posts.map(post => {
       const config = getPostConfig(post.type);
+      const dev = isDev();
       const isOwner = currentUser && post.author === currentUser;
+      const canDelete = dev || isOwner;
 
       return `
         <section class="announce-card">
@@ -459,7 +529,7 @@
           <p class="announce-body">${escapeHtml(post.content)}</p>
           <div class="announce-meta">
             <span>โดย: ${escapeHtml(post.author)} • เวลา ${formatTime(post.created_at)}</span>
-            ${isOwner ? `<button class="delete-btn" type="button" data-delete="${post.id}">ลบโพสต์</button>` : ''}
+            ${canDelete ? `<button class="delete-btn" type="button" data-delete="${post.id}">${dev && !isOwner ? 'ลบโพสต์ (dev)' : 'ลบโพสต์'}</button>` : ''}
           </div>
         </section>
       `;
@@ -468,8 +538,10 @@
 
   async function deletePost(id) {
     if (!confirm('ต้องการลบโพสต์นี้ใช่หรือไม่?')) return;
+    // dev ลบได้ทุกโพสต์ด้วย token — คนทั่วไปยังต้องส่งชื่อตัวเองไปเทียบ
+    const url = isDev() ? `${API}/${id}` : `${API}/${id}?author=${encodeURIComponent(currentUser)}`;
     try {
-      await request(`${API}/${id}?author=${encodeURIComponent(currentUser)}`, { method: 'DELETE' });
+      await request(url, { method: 'DELETE', headers: authHeaders() });
       posts = posts.filter(post => post.id !== id);
       renderFeed();
     } catch (err) {
@@ -493,6 +565,14 @@
   });
 
   document.getElementById('refreshBtn').addEventListener('click', loadPosts);
+
+  devBtn.addEventListener('click', () => {
+    if (!isDev()) return devLogin();
+    if (!confirm('ออกจากโหมด dev?')) return;
+    clearDevToken();
+    updateDevUi();
+    renderFeed();
+  });
 
   document.getElementById('emergencyBtn').addEventListener('click', () => {
     document.getElementById('postType').value = 'alert';
@@ -520,7 +600,7 @@
     try {
       await request(API, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(payload)
       });
       document.getElementById('postTitle').value = '';
@@ -534,6 +614,7 @@
     }
   });
 
+  updateDevUi();
   loadPosts();
 </script>
 
